@@ -42,7 +42,7 @@
         game.load.image('burger', 'assets/burger.png');
         game.load.image('block', 'assets/block.png');
         game.load.image('door', 'assets/door.png');
-        game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+        game.load.spritesheet('dude', 'assets/spritesheet.png', 300, 300);
     }
 
     var player;
@@ -75,7 +75,7 @@
         platforms.enableBody = true;
 
         doors = game.add.group();
-        doors.enableBody = false;
+        doors.enableBody = true;
 
         //creates teh worlds
         for(var x = 0; x < worldMapArray[0].length; x++) {
@@ -104,14 +104,15 @@
                     //  We need to enable physics on the player
                     game.physics.arcade.enable(player);
 
+                    player.scale.setTo(scaleRatio, scaleRatio);
+
                     //  Player physics properties
                     player.body.gravity.y = 300;
                     player.body.collideWorldBounds = true;
                 } else if(currentSquare === 4) {
                     //door
-
                     var door = doors.create(100*x, 100*y, 'door');
-                    //  Scale it to fit the width of the game
+                    //  Scale it
                     door.scale.setTo(scaleRatio, scaleRatio);
                     //door.body.immovable = true;
                 }
@@ -138,6 +139,7 @@
 
         //  Collide the player and the stars with the platforms
         game.physics.arcade.collide(player, platforms);
+        game.physics.arcade.collide(doors, platforms);
 
         //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
         game.physics.arcade.overlap(player, doors, foundDoor, null, this);
@@ -183,6 +185,13 @@
         scoreText.text = 'WINNER ';
 
     }
+
+    function movePlayer(x, y) {  player.x += (x+100)20;  player.y += y * 32;}
+    // usagemovePlayer(1, 0);
+    // move player 1 tile rightmovePlayer(0, 1);
+    // move player 1 tile downmovePlayer(-1, 0);
+    // move player 1 tile leftmovePlayer(0, -2);
+    // move player 2 tiles up
 
 </script>
 
