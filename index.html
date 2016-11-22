@@ -132,16 +132,14 @@
         //  Our controls.
         cursors = game.input.keyboard.createCursorKeys();
 
-
     }
 
     function update() {
-
         //  Collide the player and the stars with the platforms
         game.physics.arcade.collide(player, platforms);
         game.physics.arcade.collide(doors, platforms);
 
-        //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
+        //  Checks to see if the player overlaps with door
         game.physics.arcade.overlap(player, doors, foundDoor, null, this);
 
         //  Reset the players velocity (movement)
@@ -149,15 +147,12 @@
 
         if (cursors.left.isDown)
         {
-            //  Move to the left
-            player.body.velocity.x = -150;
-
-            player.animations.play('left');
+            leftMove();
         }
         else if (cursors.right.isDown)
         {
             //  Move to the right
-            player.body.velocity.x = 150;
+            player.body.x += 100;
 
             player.animations.play('right');
         }
@@ -177,7 +172,15 @@
 
     }
 
+    function leftMove(){
+        //Move to the left
+        player.body.x -= 100;
+
+        player.animations.play('left');
+    }
+
     function render(){
+        game.debug.spriteInfo(player, 20, 32);
     }
 
     function foundDoor () {
@@ -185,13 +188,6 @@
         scoreText.text = 'WINNER ';
 
     }
-
-   // function movePlayer(x, y) {  player.x += (x+100)20;  player.y += y * 32;}
-    // usagemovePlayer(1, 0);
-    // move player 1 tile rightmovePlayer(0, 1);
-    // move player 1 tile downmovePlayer(-1, 0);
-    // move player 1 tile leftmovePlayer(0, -2);
-    // move player 2 tiles up
 
 </script>
 
