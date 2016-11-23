@@ -20,7 +20,36 @@
     //level1mapbullshit
     var mapHeight = 12;
     var mapWidth = 18;
+
+    var worldMapArray3 = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+        [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1],
+        [1, 0, 1, 1, 1, 0, 0, 0, 0, 3, 0, 0, 0, 1, 2, 0, 1, 1, 0],
+        [1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0],
+        [1, 0, 1, 0, 1, 2, 2, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+        [1, 4, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]
+    ];
     var worldMapArray = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+        [1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 1],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 2, 2, 3, 0, 0, 1],
+        [0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ];
+    var worldMapArray1 = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -237,8 +266,8 @@
             }
             //rest of movement
             if(worldMapArray[playerY][playerX + 1] === 0){
-                var currentYSquare = playerY;
-                var fallAmount = 0;
+                currentYSquare = playerY;
+                fallAmount = 0;
                 while(worldMapArray[currentYSquare + 1][playerX + 1] === 0){
                     currentYSquare += 1;
                     fallAmount += 1;
@@ -287,9 +316,9 @@
                 var burgerCount = 0;
                 var ourBurger = 0;
                 //go through each square and count burgers before burger in question in order to kill correct burger sprite
-                for(var x = 0; x < worldMapArray[0].length; x++) {
-                    for (var y = 0; y < worldMapArray.length; y++) {
-                        var currentSquare = worldMapArray[y][x];
+                for(x = 0; x < worldMapArray[0].length; x++) {
+                    for (y = 0; y < worldMapArray.length; y++) {
+                        currentSquare = worldMapArray[y][x];
                         if(currentSquare === 3){
                             ourBurger = burgerCount;
                         } else if(currentSquare === 2){
@@ -334,12 +363,12 @@
                 }
             } else {
                 if(playerIsFacing === -1){
-                    var burgerCount = 0;
-                    var ourBurger = 0;
+                    burgerCount = 0;
+                    ourBurger = 0;
                     //go through each square and count burgers before burger in question in order to kill correct burger sprite
-                    for(var x = 0; x < worldMapArray[0].length; x++) {
-                        for (var y = 0; y < worldMapArray.length; y++) {
-                            var currentSquare = worldMapArray[y][x];
+                    for(x = 0; x < worldMapArray[0].length; x++) {
+                        for (y = 0; y < worldMapArray.length; y++) {
+                            currentSquare = worldMapArray[y][x];
                             if(currentSquare === 3){
                                 ourBurger = burgerCount;
                             }
@@ -365,13 +394,13 @@
                         }
                     }
                 } else if(playerIsFacing === 1){
-                    console.log('test');
-                    var burgerCount = 0;
-                    var ourBurger = 0;
+
+                    burgerCount = 0;
+                    ourBurger = 0;
                     //go through each square and count burgers before burger in question in order to kill correct burger sprite
-                    for(var x = 0; x < worldMapArray[0].length; x++) {
-                        for (var y = 0; y < worldMapArray.length; y++) {
-                            var currentSquare = worldMapArray[y][x];
+                    for(x = 0; x < worldMapArray[0].length; x++) {
+                        for (y = 0; y < worldMapArray.length; y++) {
+                            currentSquare = worldMapArray[y][x];
                             if(currentSquare === 3){
                                 ourBurger = burgerCount + 1;
                             }
@@ -433,7 +462,7 @@
     }
 
     function render(){
-        game.debug.spriteInfo(player, 20, 32);
+        //game.debug.spriteInfo(player, 20, 32);
     }
 
     function foundDoor () {
