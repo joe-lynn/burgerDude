@@ -40,7 +40,6 @@
     function preload() {
 
         game.load.image('cloudBackground', 'assets/cloudBackground.png');
-        game.load.image('ground', 'assets/platform.png');
         game.load.image('burger', 'assets/burger.png');
         game.load.image('block', 'assets/block.png');
         game.load.image('door', 'assets/door.png');
@@ -81,7 +80,7 @@
         game.add.sprite(0, 0, 'cloudBackground');
 
         //sets the game world size based on current map
-        game.world.setBounds(0, 0, 100*mapWidth, 100*mapHeight);
+        game.world.setBounds(0, 0, 100*(mapWidth + 1), 100*(mapHeight + 1));
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
         platforms = game.add.group();
@@ -152,7 +151,7 @@
 
     function update() {
         //  Collide the player and the stars with the platforms
-        game.physics.arcade.collide(player, platforms);
+        //game.physics.arcade.collide(player, platforms);
         game.physics.arcade.collide(doors, platforms);
 
         //  Checks to see if the player overlaps with door
@@ -203,7 +202,7 @@
             if(playerIsFacing != -1){
                 playerIsFacing = -1;
                 if(playerIsHoldingBurger){
-                    player.loadTexture('dudeWithBurgerLeft', 0);
+                    player.loadTexture('withBurgerLeft', 0);
                 } else {
                     player.loadTexture('dudeLeft', 0);
                 }
@@ -231,7 +230,7 @@
             if(playerIsFacing != 1){
                 playerIsFacing = 1;
                 if(playerIsHoldingBurger){
-                    player.loadTexture('dudeWithBurgerRight', 0);
+                    player.loadTexture('withBurgerRight', 0);
                 } else {
                     player.loadTexture('dudeRight', 0);
                 }
