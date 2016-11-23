@@ -35,6 +35,8 @@
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ];
 
+    var burgerArray = [];
+
     function preload() {
 
         game.load.image('cloudBackground', 'assets/cloudBackground.png');
@@ -42,12 +44,22 @@
         game.load.image('burger', 'assets/burger.png');
         game.load.image('block', 'assets/block.png');
         game.load.image('door', 'assets/door.png');
+        game.load.image('withBurgerLeft', 'assets/withBurgerLeft.png');
+        game.load.image('withBurgerRight', 'assets/withBurgerRight.png');
         game.load.spritesheet('dude', 'assets/spritesheet.png', 300, 300);
     }
 
     var player;
     var platforms;
     var cursors;
+
+    var timeSinceLastLeftMove = new Date();
+    var timeSinceLastRightMove = new Date();
+    var timeSinceLastUpMove = new Date();
+    var timeSinceLastDownMove = new Date();
+
+    //right = 1 left = -1
+    var playerIsFacing = 1;
 
     var doors;
     var score = 0;
@@ -77,6 +89,7 @@
         doors = game.add.group();
         doors.enableBody = true;
 
+        var burgerCounter = 0;
         //creates teh worlds
         for(var x = 0; x < worldMapArray[0].length; x++) {
             for(var y = 0; y < worldMapArray.length; y++){
@@ -91,12 +104,13 @@
                     //  This stops it from falling away when you jump on it
                     ground.body.immovable = true;
                 } else if(currentSquare === 2) {
-                    //block
-                    var ground = platforms.create(100*x, 100*y, 'burger');
+                    //burger
+                    burgerArray[burgerCounter] = platforms.create(100*x, 100*y, 'burger');
                     //  Scale it to fit the width of the game
-                    ground.scale.setTo(scaleRatio, scaleRatio);
+                    burgerArray[burgerCounter].scale.setTo(scaleRatio, scaleRatio);
                     //  This stops it from falling away when you jump on it
-                    ground.body.immovable = true;
+                    burgerArray[burgerCounter].body.immovable = true;
+                    burgerCounter += 1;
                 } else if(currentSquare === 3){
                     //create dude
                     player = game.add.sprite(100*x, 100*y, 'dude');
@@ -107,7 +121,7 @@
                     player.scale.setTo(scaleRatio, scaleRatio);
 
                     //  Player physics properties
-                    player.body.gravity.y = 300;
+                    player.body.gravity.y = 0;
                     player.body.collideWorldBounds = true;
                 } else if(currentSquare === 4) {
                     //door
@@ -145,38 +159,135 @@
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
-        if (cursors.left.isDown)
-        {
-            leftMove();
+        //limits moves per second.
+        if (cursors.left.isDown){
+            if(canMoveTime('left')) {
+                canMovePhysics('left');
+            }
+        } else if (cursors.right.isDown){
+            if(canMoveTime('right')){
+                canMovePhysics('right');
+            }
+        } else if(cursors.up.isDown) {
+            if(canMoveTime('up')){
+                canMovePhysics('up');
+            }
+        } else if(cursors.down.isDown) {
+            if(canMoveTime('down')){
+                canMovePhysics('down')
+            }
         }
-        else if (cursors.right.isDown)
-        {
-            //  Move to the right
-            player.body.x += 100;
-
-            player.animations.play('right');
-        }
-        else
-        {
-            //  Stand still
-            player.animations.stop();
-
-            player.frame = 4;
-        }
-
-        //  Allow the player to jump if they are touching the ground.
-        if (cursors.up.isDown && player.body.touching.down)
-        {
-            player.body.velocity.y = -350;
-        }
-
     }
 
-    function leftMove(){
-        //Move to the left
-        player.body.x -= 100;
+    function canMovePhysics(movement){
+        var playerX;
+        var playerY;
+        for(var x = 0; x < worldMapArray[0].length; x++) {
+            for (var y = 0; y < worldMapArray.length; y++) {
+                var currentSquare = worldMapArray[y][x];
+                if(currentSquare === 3){
+                    playerX = x;
+                    playerY = y;
+                }
+            }
+        }
 
-        player.animations.play('left');
+        if(movement === 'left'){
+            playerIsFacing = -1;
+            if(worldMapArray[playerY][playerX - 1] === 0){
+                var currentYSquare = playerY;
+                var fallAmount = 0;
+                while(worldMapArray[currentYSquare + 1][playerX - 1] === 0){
+                    currentYSquare += 1;
+                    fallAmount += 1;
+                }
+                //here is the movement that takes into account falling
+                player.body.x -= 100;
+                player.body.y += 100*fallAmount;
+                worldMapArray[playerY][playerX] = 0;
+                worldMapArray[playerY + fallAmount][playerX - 1] = 3;
+            }
+        } else if(movement === 'right') {
+            playerIsFacing = 1;
+            if(worldMapArray[playerY][playerX + 1] === 0){
+                var currentYSquare = playerY;
+                var fallAmount = 0;
+                while(worldMapArray[currentYSquare + 1][playerX + 1] === 0){
+                    currentYSquare += 1;
+                    fallAmount += 1;
+                }
+                //here is the movement that takes into account falling
+                player.body.x += 100;
+                player.body.y += 100*fallAmount;
+                worldMapArray[playerY][playerX] = 0;
+                worldMapArray[playerY + fallAmount][playerX + 1] = 3;
+            }
+        } else if(movement === 'up'){
+            if(playerIsFacing === -1){
+                if(worldMapArray[playerY - 1][playerX - 1] === 0) {
+                    if(worldMapArray[playerY][playerX - 1] !== 0){
+                        player.body.x -= 100;
+                        player.body.y -= 100;
+                        worldMapArray[playerY][playerX] = 0;
+                        worldMapArray[playerY - 1][playerX - 1] = 3;
+                    }
+                }
+            } else if(playerIsFacing === 1) {
+                if(worldMapArray[playerY - 1][playerX + 1] === 0) {
+                    if(worldMapArray[playerY][playerX + 1] !== 0){
+                        player.body.x += 100;
+                        player.body.y -= 100;
+                        worldMapArray[playerY][playerX] = 0;
+                        worldMapArray[playerY - 1][playerX + 1] = 3;
+                    }
+                }
+            }
+        } else if(movement === 'down'){
+            //go through each square and count burgers before burger in question in order to kill correct burger sprite
+            if(playerIsFacing === -1){
+                if(worldMapArray[playerY][playerX - 1] === 2) {
+                    if(worldMapArray[playerY - 1][playerX - 1] === 0){
+                        if(worldMapArray[playerY - 1][playerX] === 0){
+                            //player picks up burger to left
+                            player.body.y -= 100;
+                            player.loadTexture('withBurgerLeft', 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function canMoveTime(movement){
+        if(movement === 'left'){
+            if(new Date() - timeSinceLastLeftMove > 100){
+                timeSinceLastLeftMove = new Date();
+                return true;
+            } else {
+                return false;
+            }
+        } else if(movement === 'right') {
+            if(new Date() - timeSinceLastRightMove > 100) {
+                timeSinceLastRightMove = new Date();
+                return true;
+            } else {
+                return false;
+            }
+        } else if(movement === 'up') {
+            if(new Date() - timeSinceLastUpMove > 100) {
+                timeSinceLastUpMove = new Date();
+                return true;
+            } else {
+                return false;
+            }
+        } else if(movement === 'down') {
+            if(new Date() - timeSinceLastDownMove > 100){
+                timeSinceLastDownMove = new Date();
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     function render(){
@@ -184,7 +295,6 @@
     }
 
     function foundDoor () {
-        console.log("TEST1");
         scoreText.text = 'WINNER ';
 
     }
